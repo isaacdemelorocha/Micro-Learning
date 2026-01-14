@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro&Learning</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            /* Paleta Burger King */
+            --bk-red: #D62300;
+            --bk-orange: #EF7B10;
+            --bk-yellow: #F5A900;
+            --bk-brown: #502D16;
+            --bk-sand: #F5EBD7;
+            --bk-white: #FFFFFF;
+            --bk-success: #008A22;
+        }
+
+        body { 
+            background-color: var(--bk-sand); 
+            font-family: 'Inter', sans-serif; 
+            color: var(--bk-brown);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .content-wrapper { flex: 1 0 auto; }
+        
+        /* Navbar */
+        .totvs-nav { background-color: var(--bk-white); border-bottom: 4px solid var(--bk-red); }
+        .logo-text { font-weight: 900; letter-spacing: -1px; color: var(--bk-red); text-transform: uppercase; }
+        .logo-dot { color: var(--bk-orange); }
+        
+        /* Progress Container */
+        .progress-container-main { background: var(--bk-white); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid var(--bk-brown); }
+        .percent-display { font-size: 2.5rem; font-weight: 900; color: var(--bk-red); line-height: 1; }
+        .progress-label { font-size: 0.8rem; font-weight: 700; color: var(--bk-brown); text-transform: uppercase; }
+        .progress { height: 16px; border-radius: 20px; background-color: #e9ecef; overflow: visible; border: 1px solid #ddd; }
+        .progress-bar { background-color: var(--bk-orange); border-radius: 20px; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        /* Cards de Módulos */
+        .step-card { border: none; border-radius: 8px; margin-bottom: 12px; transition: 0.3s; border-left: 6px solid #ccc; background: white; cursor: pointer; }
+        .step-card.active { border-left-color: var(--bk-orange); box-shadow: 0 4px 10px rgba(80,45,22,0.1); }
+        .step-card.completed { border-left-color: var(--bk-success); }
+        .step-card.locked { opacity: 0.6; cursor: not-allowed; background-color: #eee; }
+        
+        /* Botões e Inputs */
+        .btn-outline-totvs { border: 2px solid var(--bk-red); color: var(--bk-red); font-weight: 700; margin-bottom: 8px; text-align: left; text-transform: uppercase; }
+        .btn-outline-totvs:hover { background-color: var(--bk-red); color: white; border-color: var(--bk-red); }
+        .btn-primary { background-color: var(--bk-red); border-color: var(--bk-red); font-weight: 700; }
+        .btn-primary:hover { background-color: var(--bk-brown); border-color: var(--bk-brown); }
+        .bg-primary { background-color: var(--bk-red) !important; }
+        .text-primary { color: var(--bk-red) !important; }
+        
+        /* Certificado Card */
+        #certificateCard { display: none; background: linear-gradient(135deg, var(--bk-brown), #2a180c); color: white; border: none; border-radius: 12px; }
+        
+        /* Footer */
+        footer { flex-shrink: 0; background-color: var(--bk-white); border-top: 2px solid var(--bk-brown); padding: 20px 0; margin-top: 40px; }
+        .footer-link { color: var(--bk-red); text-decoration: none; font-weight: 700; transition: color 0.2s; }
+        .footer-link:hover { color: var(--bk-orange); }
+
+        /* Documento do Certificado */
+        .cert-paper { border: 10px double var(--bk-red); padding: 40px; background: white; color: var(--bk-brown); text-align: center; position: relative; max-width: 100%; }
+        .cert-name { font-family: 'Times New Roman', serif; font-size: 2.5rem; border-bottom: 2px solid var(--bk-yellow); display: inline-block; margin: 20px 0; min-width: 300px; max-width: 100%; word-wrap: break-word; }
+
+        @media (max-width: 768px) {
+            .percent-display { font-size: 2rem; }
+            .cert-name { font-size: 1.5rem; min-width: 100%; }
+            .cert-paper { padding: 20px; border-width: 5px; }
+            .navbar-brand { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="content-wrapper">
+    <nav class="navbar totvs-nav mb-4 shadow-sm">
+        <div class="container">
+            <span class="navbar-brand logo-text">Micro<span class="logo-dot">&</span>Learning</span>
+            <div class="d-flex align-items-center">
+                 <span class="badge rounded-pill bg-light text-danger border me-2" id="navPercent" style="border-color: var(--bk-red) !important;">0% Concluído</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-8 order-first order-lg-last">
+                <div class="card border-0 shadow-sm overflow-hidden" style="border: 1px solid #ddd !important;">
+                    <div class="p-3 p-md-4 bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <span id="moduleLabel" class="badge bg-primary mb-2">Aula 01</span>
+                            <h4 id="activeTitle" class="fw-bold mb-0" style="max-width: 250px; color: var(--bk-brown);">Título da Lição</h4>
+                        </div>
+                        <div id="statusIcon"></div>
+                    </div>
+                    <div class="p-3 p-md-4" id="mainDisplay"></div>
+                    <div id="quizSection" class="p-3 p-md-4 bg-light border-top" style="background-color: #fffaf0 !important;">
+                        <h6 class="fw-bold text-primary mb-3">Pergunta de Fixação</h6>
+                        <p id="qText" class="mb-3 fw-semibold small"></p>
+                        <div id="qOptions" class="d-grid gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="progress-container-main shadow-sm">
+                    <div class="d-flex justify-content-between align-items-end mb-2">
+                        <div>
+                            <span class="progress-label">Status da Trilha</span>
+                            <div class="percent-display" id="mainPercentDisplay">0%</div>
+                        </div>
+                        <i class="bi bi-fire text-primary fs-3"></i>
+                    </div>
+                    <div class="progress">
+                        <div id="mainBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <h6 class="fw-bold mb-3 text-muted" style="text-transform: uppercase; font-size: 0.8rem;">Módulos da Jornada</h6>
+                <div id="timeline"></div>
+                <div id="certificateCard" class="card p-4 text-center mt-3 shadow animate__animated animate__bounceIn">
+                    <i class="bi bi-trophy-fill text-warning display-5 mb-2"></i>
+                    <h5 class="fw-bold">Jornada Finalizada!</h5>
+                    <button class="btn btn-light text-danger fw-bold w-100" data-bs-toggle="modal" data-bs-target="#nameModal" style="color: var(--bk-red) !important;">Emitir Certificado</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mx-3 mx-md-auto">
+        <div class="modal-content text-center p-4" style="border-radius: 15px; border: 3px solid var(--bk-brown);">
+            <div id="modalIconArea" class="mb-3"></div>
+            <h4 id="modalTitle" class="fw-bold"></h4>
+            <p id="modalBody" class="text-muted"></p>
+            <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Continuar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="nameModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mx-3 mx-md-auto">
+        <div class="modal-content p-4" style="border-radius: 15px; border: 3px solid var(--bk-brown);">
+            <h5 class="fw-bold" style="color: var(--bk-brown);">Quase lá!</h5>
+            <p class="text-muted small">Insira seu nome completo para a emissão do certificado.</p>
+            <input type="text" id="userNameInput" class="form-control mb-3" placeholder="Seu nome aqui..." style="border: 2px solid #ddd;">
+            <button class="btn btn-primary w-100" onclick="generateCertificate()">Gerar Certificado</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="finalCertModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered mx-2 mx-md-auto">
+        <div class="modal-content border-0">
+            <div class="cert-paper shadow-lg">
+                <div class="text-primary fw-bold mb-2">CERTIFICADO DE CONCLUSÃO</div>
+                <p class="small">Certificamos que</p>
+                <div class="cert-name" id="displayCertName">Nome do Usuário</div>
+                <p class="small">concluiu com êxito a trilha de<br><strong>Micro Learning de Agilidade</strong></p>
+                <div class="mt-4 small text-muted">Emitido em: <span id="certDate"></span></div>
+            </div>
+            <button class="btn btn-primary mt-3" onclick="window.print()">Baixar / Imprimir</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container text-center">
+        <p class="mb-0 text-muted small">Desenvolvido por <a href="https://www.linkedin.com/in/isaaac/" target="_blank" class="footer-link">Isaac de Melo Rocha <i class="bi bi-linkedin ms-1"></i></a></p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const trackData = [
+        { 
+            id: 0, 
+            title: "Manifesto Ágil", 
+            videoId: "0lKZlqpQGhI",
+            desc: "Conheça a história do Manifesto Ágil", 
+            question: "Sobre a Cultura Ágil, é correto afirmar que é composto por:", 
+            options: ["4 valores e 12 princípios", "6 valores e 10 princípios", "10 valores e 4 princípios"], 
+            answer: 0 
+        },
+        { 
+            id: 1, 
+            title: "O que é SCRUM?", 
+            videoId: "dFHB6toBQ2I",
+            desc: "Agora conheça um pouco sobre o framework SCRUM.", 
+            question: "De acordo com o vídeo, o SCRUM tem quantas cerimônias principais?", 
+            options: ["3", "4", "5"], 
+            answer: 2 
+        },
+        { 
+            id: 2, 
+            title: "Kanban uma ferramenta Ágil", 
+            videoId: "aE2gUYx7nGE",
+            desc: "Para finalizar, aprenda como usar o Kanban em seu dia a dia.", 
+            question: "Qual é o objetivo principal de utilizar um quadro Kanban na gestão de projetos?", 
+            options: ["Apenas definir prazos rígidos para cada membro da equipe", "Substituir todas as reuniões presenciais por cartões coloridos", "Proporcionar visibilidade total do fluxo de trabalho e identificar gargalos"], 
+            answer: 2 
+        }
+    ];
+
+    let completedSteps = JSON.parse(localStorage.getItem('bk_learning_progress')) || [];
+    const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+    const finalCertModal = new bootstrap.Modal(document.getElementById('finalCertModal'));
+
+    function init() { renderTimeline(); loadStep(0); }
+
+    function renderTimeline() {
+        const container = document.getElementById('timeline');
+        container.innerHTML = '';
+        trackData.forEach((step, index) => {
+            const isDone = completedSteps.includes(step.id);
+            const isLocked = index > 0 && !completedSteps.includes(trackData[index-1].id);
+            container.innerHTML += `<div class="card step-card p-3 ${isLocked ? 'locked' : 'active'} ${isDone ? 'completed' : ''}" onclick="${isLocked ? '' : `loadStep(${step.id})`}"><div class="d-flex align-items-center"><div class="me-3">${isDone ? '<i class="bi bi-check-circle-fill text-success fs-5"></i>' : isLocked ? '<i class="bi bi-lock-fill text-muted"></i>' : '<i class="bi bi-play-circle text-primary fs-5"></i>'}</div><div><h6 class="mb-0 fw-bold small">${step.title}</h6></div></div></div>`;
+        });
+        updateProgressUI();
+    }
+
+    function loadStep(id) {
+        const step = trackData[id];
+        document.getElementById('moduleLabel').innerText = `Aula 0${id + 1}`;
+        document.getElementById('activeTitle').innerText = step.title;
+        const isDone = completedSteps.includes(id);
+        
+        const videoHTML = `<div class="ratio ratio-16x9 shadow-sm mb-3">
+            <iframe src="https://www.youtube.com/embed/${step.videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>`;
+
+        document.getElementById('mainDisplay').innerHTML = `<div class="animate__animated animate__fadeIn"><p class="text-muted small">${step.desc}</p>${videoHTML}</div>`;
+        
+        const quizSection = document.getElementById('quizSection');
+        if (!isDone) {
+            quizSection.classList.remove('d-none');
+            document.getElementById('qText').innerText = step.question;
+            const qOptions = document.getElementById('qOptions');
+            qOptions.innerHTML = '';
+            step.options.forEach((opt, idx) => { qOptions.innerHTML += `<button class="btn btn-outline-totvs btn-sm p-2" onclick="checkQuiz(${id}, ${idx})">${opt}</button>`; });
+            document.getElementById('statusIcon').innerHTML = `<span class="badge bg-warning text-dark small" style="font-size:0.7rem">Pendente</span>`;
+        } else {
+            quizSection.classList.add('d-none');
+            document.getElementById('mainDisplay').innerHTML += `<div class="alert alert-success mt-4 border-0 shadow-sm d-flex align-items-center"><i class="bi bi-check-circle-fill me-2 fs-4"></i><div class="small"><strong>Módulo Finalizado!</strong> Continue progredindo na trilha.</div></div>`;
+            document.getElementById('statusIcon').innerHTML = `<span class="badge bg-success small" style="font-size:0.7rem">Concluído</span>`;
+        }
+    }
+
+    function checkQuiz(stepId, choice) {
+        const iconArea = document.getElementById('modalIconArea');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
+
+        if (choice === trackData[stepId].answer) {
+            iconArea.innerHTML = '<i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>';
+            title.innerText = "Parabéns!";
+            body.innerText = "Você acertou e desbloqueou o próximo nível.";
+            if(!completedSteps.includes(stepId)) {
+                completedSteps.push(stepId);
+                localStorage.setItem('bk_learning_progress', JSON.stringify(completedSteps));
+            }
+            feedbackModal.show();
+            renderTimeline();
+            if(stepId + 1 < trackData.length) setTimeout(() => loadStep(stepId + 1), 500);
+        } else {
+            iconArea.innerHTML = '<i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>';
+            title.innerText = "Ops, quase!";
+            body.innerText = "Reveja o conteúdo e tente novamente.";
+            feedbackModal.show();
+        }
+    }
+
+    function updateProgressUI() {
+        const perc = Math.round((completedSteps.length / trackData.length) * 100);
+        document.getElementById('mainBar').style.width = perc + '%';
+        document.getElementById('mainPercentDisplay').innerText = perc + '%';
+        document.getElementById('navPercent').innerText = perc + '% Concluído';
+        if (perc === 100) document.getElementById('certificateCard').style.display = 'block';
+    }
+
+    function generateCertificate() {
+        const name = document.getElementById('userNameInput').value;
+        if(name.length < 3) return alert("Por favor, digite seu nome completo.");
+        document.getElementById('displayCertName').innerText = name;
+        document.getElementById('certDate').innerText = new Date().toLocaleDateString('pt-BR');
+        bootstrap.Modal.getInstance(document.getElementById('nameModal')).hide();
+        finalCertModal.show();
+    }
+
+    init();
+</script>
+</body>
+</html>
