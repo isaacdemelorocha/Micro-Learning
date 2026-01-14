@@ -1,4 +1,4 @@
-# 🍔 Micro&Learning - Agile Edition
+# Micro&Learning - Agile Edition
 
 Uma plataforma de **Micro Learning** (LXP) leve, interativa e totalmente responsiva, com identidade visual temática. 
 
